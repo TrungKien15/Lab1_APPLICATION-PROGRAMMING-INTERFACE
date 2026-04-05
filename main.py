@@ -20,7 +20,6 @@ def root():
     return {
         "name": "Sentiment Analysis API",
         "description": "Phân tích cảm xúc văn bản (positive/negative)",
-        "version": "1.0"
     }
 
 @app.get("/health")
