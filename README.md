@@ -42,7 +42,9 @@ Ngoài ra, hệ thống có kiểm tra dữ liệu đầu vào và xử lý các
 ## Cách chạy chương trình
 
 Bước 1: Clone project
+
 git clone https://github.com/TrungKien15/Lab1_APPLICATION-PROGRAMMING-INTERFACE.git
+
 cd Lab1_APPLICATION-PROGRAMMING-INTERFACE
 
 Bước 2: Tạo môi trường ảo
