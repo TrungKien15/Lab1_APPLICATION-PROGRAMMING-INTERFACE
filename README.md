@@ -48,21 +48,27 @@ git clone https://github.com/TrungKien15/Lab1_APPLICATION-PROGRAMMING-INTERFACE.
 cd Lab1_APPLICATION-PROGRAMMING-INTERFACE
 
 Bước 2: Tạo môi trường ảo
+
 python -m venv venv
 
 Bước 3: Kích hoạt môi trường
+
 venv\Scripts\activate
 
 Nếu gặp lỗi quyền (Execution Policy), chạy:
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
 venv\Scripts\activate
 
 Bước 4: Cài thư viện
+
 pip install -r requirements.txt
 
 Bước 5: Chạy API
+
 python -m uvicorn main:app --reload
+
 Bước 6: Test API
 
 Mở trình duyệt và truy cập:
