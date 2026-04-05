@@ -137,8 +137,6 @@ Hệ thống có kiểm tra một số trường hợp lỗi:
 * Sai định dạng (không phải string hoặc list)
 * Lỗi trong quá trình gọi mô hình
 
-Các lỗi sẽ được trả về với mã HTTP phù hợp (400 hoặc 500).
-
 ---
 
 ## Video demo
