@@ -142,7 +142,7 @@ Hệ thống có kiểm tra một số trường hợp lỗi:
 ## Video demo
 
 Link video demo:
-
+https://drive.google.com/file/d/1_XKQYAPHPBpXLu5vFZoam-oReptOe2ea/view?usp=sharing
 
 ---
 
