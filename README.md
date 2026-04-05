@@ -1,9 +1,7 @@
 # LAB 1 - Xây dựng Web API với FastAPI và Hugging Face
 
-## Thông tin sinh viên
-
 * Họ tên: Trần Trung Kiên
-* MSSV: (điền MSSV của bạn)
+* MSSV: 24120079
 
 ---
 
