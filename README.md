@@ -38,27 +38,36 @@ Ngoài ra, hệ thống có kiểm tra dữ liệu đầu vào và xử lý các
 
 ---
 
-## Cài đặt thư viện
-
-Cài đặt các thư viện cần thiết bằng cách mở terminal và nhập lệnh:
-
-
-pip install -r requirements.txt
-
-
----
 
 ## Cách chạy chương trình
 
-Chạy API bằng lệnh:
+Bước 1: Clone project
+git clone https://github.com/TrungKien15/Lab1_APPLICATION-PROGRAMMING-INTERFACE.git
+cd Lab1_APPLICATION-PROGRAMMING-INTERFACE
 
-uvicorn main:app --reload
+Bước 2: Tạo môi trường ảo
+python -m venv venv
 
-Sau khi chạy, truy cập vào:
+Bước 3: Kích hoạt môi trường
+venv\Scripts\activate
+
+Nếu gặp lỗi quyền (Execution Policy), chạy:
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+venv\Scripts\activate
+
+Bước 4: Cài thư viện
+pip install -r requirements.txt
+
+Bước 5: Chạy API
+python -m uvicorn main:app --reload
+Bước 6: Test API
+
+Mở trình duyệt và truy cập:
 
 http://127.0.0.1:8000/docs
 
-để test API trực tiếp.
+Sau đó có thể test API.
 
 
 
