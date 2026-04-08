@@ -3,50 +3,86 @@
 ## Thông tin sinh viên
 
 * Họ tên: Trần Trung Kiên
-* MSSV: 24120079
+* MSSV: (điền MSSV)
+
+---
+
+## Giới thiệu
+
+Trong bài lab này, em xây dựng một hệ thống Web API sử dụng FastAPI để thực hiện phân tích cảm xúc văn bản.
+Hệ thống cho phép người dùng gửi vào một hoặc nhiều câu tiếng Anh, sau đó trả về kết quả phân loại cảm xúc là **POSITIVE** hoặc **NEGATIVE**.
 
 ---
 
 ## Mô hình sử dụng
 
-Bài lab sử dụng mô hình phân tích cảm xúc từ Hugging Face:
+Hệ thống sử dụng mô hình từ Hugging Face:
 
 * Tên model: distilbert-base-uncased-finetuned-sst-2-english
 * Link: https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english
 
-Mô hình có nhiệm vụ phân loại văn bản tiếng Anh thành:
+---
 
-* POSITIVE (tích cực)
-* NEGATIVE (tiêu cực)
+## Công nghệ sử dụng
+
+* FastAPI: xây dựng API
+* Uvicorn: chạy server
+* Transformers: sử dụng mô hình AI
+* Torch: backend cho model
+* Requests: test API
 
 ---
 
-## Mô tả hệ thống
+## Chức năng chính
 
-Hệ thống được xây dựng bằng FastAPI, cung cấp các API để phân tích cảm xúc văn bản.
 
-Các endpoint chính:
+### 1. GET /
 
-* GET /: thông tin hệ thống
-* GET /health: kiểm tra trạng thái API
-* GET /model-info: thông tin về mô hình
-* POST /predict: phân tích cảm xúc (đầy đủ)
-* POST /predict/simple: trả về kết quả đơn giản
+Trả về thông tin giới thiệu về hệ thống.
 
 ---
 
-## Đặc điểm nổi bật
+### 2. GET /health
 
-* Hỗ trợ cả **một câu hoặc nhiều câu**
-* Có **kiểm tra dữ liệu đầu vào**
-* Loại bỏ các câu không có nghĩa (ví dụ: "abc", "123")
-* Trả về kết quả có cấu trúc rõ ràng
-* Có đánh giá **độ tin cậy (confidence)**
-* Có xử lý lỗi và logging
+Kiểm tra trạng thái hoạt động của hệ thống.
+
 
 ---
 
-## Hướng dẫn chạy chương trình
+### 3. POST /predict
+
+Phân tích cảm xúc văn bản.
+
+
+
+---
+
+## Xử lý dữ liệu đầu vào
+
+Hệ thống có kiểm tra dữ liệu đầu vào nhằm đảm bảo tính hợp lệ:
+
+* Không chấp nhận chuỗi rỗng
+* Phải chứa ký tự chữ cái
+* Không chấp nhận chuỗi lặp (ví dụ: "aaaaaa")
+* Phải có ít nhất 2 từ
+* Loại bỏ các chuỗi không có nghĩa (ví dụ: "asdfgh qwerty")
+
+Nếu dữ liệu không hợp lệ, API sẽ trả về lỗi với mã HTTP 400.
+
+---
+
+## Xử lý lỗi
+
+API xử lý các trường hợp lỗi:
+
+* Sai định dạng dữ liệu
+* Thiếu dữ liệu
+* Dữ liệu không hợp lệ
+* Lỗi trong quá trình gọi mô hình
+
+---
+
+## Hướng dẫn cài đặt và chạy chương trình
 
 ### Bước 1: Clone project
 
@@ -106,59 +142,19 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## Ví dụ sử dụng
+## Kiểm thử API bằng Python
 
-### Input:
-
-```json
-{
-  "text": ["I love this product", "I hate this service"]
-}
-```
-
-### Output:
-
-```json
-{
-  "success": true,
-  "count": 2,
-  "results": [
-    {
-      "text": "I love this product",
-      "label": "POSITIVE",
-      "score": 0.99,
-      "confidence": "HIGH"
-    },
-    {
-      "text": "I hate this service",
-      "label": "NEGATIVE",
-      "score": 0.99,
-      "confidence": "HIGH"
-    }
-  ]
-}
-```
-
----
-
-## Kiểm tra bằng Python
-
-Chạy file:
+Chạy file test:
 
 ```bash
 python test_api.py
 ```
 
----
+File này sẽ kiểm tra:
 
-## Xử lý lỗi
-
-API xử lý các trường hợp:
-
-* Input rỗng
-* Sai định dạng
-* Câu không có nghĩa
-* Lỗi khi gọi mô hình
+* Input hợp lệ
+* Input nhiều câu
+* Input lỗi
 
 ---
 
@@ -166,6 +162,6 @@ API xử lý các trường hợp:
 
 (Link video tại đây)
 
----
+
 
 
