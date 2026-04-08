@@ -3,7 +3,7 @@
 ## Thông tin sinh viên
 
 * Họ tên: Trần Trung Kiên
-* MSSV: (điền MSSV)
+* MSSV: 24120079
 
 ---
 
