@@ -2,97 +2,70 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from transformers import pipeline
 from typing import List, Union
-import time
 import re
-import logging
-from datetime import datetime
+import time
 
-# ===== Khởi tạo app =====
 app = FastAPI()
 
-# ===== Logging (ghi log khi có request) =====
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# ===== Load model Hugging Face =====
+# ===== Load model =====
 classifier = pipeline("sentiment-analysis")
 
-# ===== Input schema =====
+# ===== Input =====
 class TextInput(BaseModel):
-    text: Union[str, List[str]]  # hỗ trợ 1 câu hoặc nhiều câu
+    text: Union[str, List[str]]
 
 
-# ===== Danh sách từ phổ biến (để kiểm tra câu có nghĩa) =====
-COMMON_WORDS = {
-    "i", "you", "this", "that", "is", "are", "am",
-    "love", "hate", "good", "bad", "product", "service",
-    "it", "very", "really", "not"
-}
+# ===== VALIDATION =====
 
+def is_valid_text(text: str):
+    text = text.strip()
 
-# ===== Hàm kiểm tra câu có nghĩa =====
-def is_meaningful_text(text: str):
-    text = text.lower()
+    # 1. Không rỗng
+    if text == "":
+        return False, "Text is empty"
 
-    # phải có ít nhất 1 chữ cái
+    # 2. Phải có chữ cái
     if not re.search(r"[a-zA-Z]", text):
-        return False
+        return False, "Text must contain alphabet characters"
 
+    # 3. Không phải toàn ký tự lặp (aaaaa, !!!!!)
+    if len(set(text)) <= 2:
+        return False, "Text looks like repeated characters"
+
+    # 4. Phải có ít nhất 2 từ
     words = text.split()
-
-    # phải có ít nhất 2 từ
     if len(words) < 2:
-        return False
+        return False, "Text too short or not meaningful"
 
-    # phải chứa ít nhất 1 từ phổ biến
-    if not any(word in COMMON_WORDS for word in words):
-        return False
+    # 5. Không phải kiểu random string (asdfgh qwerty)
+    vowel_count = sum(1 for c in text.lower() if c in "aeiou")
+    if vowel_count / len(text) < 0.2:
+        return False, "Text looks like random characters"
 
-    return True
-
-
-# ===== Hàm đánh giá độ tin cậy =====
-def get_confidence(score):
-    if score > 0.9:
-        return "HIGH"
-    elif score > 0.7:
-        return "MEDIUM"
-    else:
-        return "LOW"
+    return True, ""
 
 
-# ================= API =================
+# ===== API =====
 
-# ===== 1. Trang chủ =====
+# 1. Root
 @app.get("/")
 def root():
     return {
-        "name": "Sentiment Analysis API",
-        "description": "API phân tích cảm xúc văn bản sử dụng Hugging Face",
+        "message": "Sentiment Analysis API",
+        "usage": "POST /predict with text input"
     }
 
 
-# ===== 2. Kiểm tra trạng thái =====
+# 2. Health
 @app.get("/health")
 def health():
     return {
         "status": "ok",
-        "model_loaded": classifier is not None,
-        "time": datetime.now().isoformat()
+        "model_loaded": classifier is not None
     }
 
 
-# ===== 3. Thông tin model =====
-@app.get("/model-info")
-def model_info():
-    return {
-        "model": "distilbert-base-uncased-finetuned-sst-2-english",
-        "task": "sentiment analysis",
-        "labels": ["POSITIVE", "NEGATIVE"]
-    }
-
-
-# ===== 4. API chính =====
+# 3. Predict
 @app.post("/predict")
 def predict(input: TextInput):
     start_time = time.time()
@@ -105,25 +78,17 @@ def predict(input: TextInput):
     else:
         raise HTTPException(status_code=400, detail="Invalid input format")
 
-    # ===== Validate =====
     if len(texts) == 0:
-        raise HTTPException(status_code=400, detail="Empty input")
+        raise HTTPException(status_code=400, detail="Empty input list")
 
+    # ===== Validate từng câu =====
     for t in texts:
-        if not isinstance(t, str) or t.strip() == "":
-            raise HTTPException(status_code=400, detail="Text is empty")
+        if not isinstance(t, str):
+            raise HTTPException(status_code=400, detail="Each item must be a string")
 
-        if len(t) > 500:
-            raise HTTPException(status_code=400, detail="Text too long")
-
-        if not is_meaningful_text(t):
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid or meaningless text: '{t}'"
-            )
-
-    # ===== Log input =====
-    logger.info(f"Received input: {texts}")
+        valid, message = is_valid_text(t)
+        if not valid:
+            raise HTTPException(status_code=400, detail=f"Invalid text: '{t}' - {message}")
 
     # ===== Gọi model =====
     try:
@@ -136,41 +101,15 @@ def predict(input: TextInput):
             output.append({
                 "text": texts[i],
                 "label": r["label"],
-                "score": score,
-                "confidence": get_confidence(score)
+                "score": score
             })
-
-        end_time = time.time()
 
         return {
             "success": True,
             "count": len(output),
-            "processing_time": round(end_time - start_time, 4),
-            "timestamp": datetime.now().isoformat(),
+            "processing_time": round(time.time() - start_time, 4),
             "results": output
         }
 
     except Exception as e:
-        logger.error(f"Error: {str(e)}")
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"Model inference error: {str(e)}"
-        )
-
-
-# ===== 5. API đơn giản (bonus) =====
-@app.post("/predict/simple")
-def predict_simple(input: TextInput):
-    if isinstance(input.text, str):
-        texts = [input.text]
-    else:
-        texts = input.text
-
-    try:
-        results = classifier(texts)
-        return {
-            "results": [r["label"] for r in results]
-        }
-    except:
-        raise HTTPException(status_code=500, detail="Error processing request")
+        raise HTTPException(status_code=500, detail=str(e))
