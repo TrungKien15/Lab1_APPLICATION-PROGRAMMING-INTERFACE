@@ -1,5 +1,7 @@
 # LAB 1 - Xây dựng Web API với FastAPI và Hugging Face
 
+## Thông tin sinh viên
+
 * Họ tên: Trần Trung Kiên
 * MSSV: 24120079
 
@@ -7,93 +9,106 @@
 
 ## Mô hình sử dụng
 
-Trong bài này, em sử dụng mô hình **phân tích cảm xúc (Sentiment Analysis)** từ Hugging Face:
+Bài lab sử dụng mô hình phân tích cảm xúc từ Hugging Face:
 
 * Tên model: distilbert-base-uncased-finetuned-sst-2-english
 * Link: https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english
 
-Mô hình này có khả năng phân loại một đoạn văn bản tiếng Anh thành hai loại:
+Mô hình có nhiệm vụ phân loại văn bản tiếng Anh thành:
 
-* **POSITIVE**: cảm xúc tích cực
-* **NEGATIVE**: cảm xúc tiêu cực
+* POSITIVE (tích cực)
+* NEGATIVE (tiêu cực)
 
 ---
 
 ## Mô tả hệ thống
 
-Hệ thống được xây dựng bằng FastAPI, cho phép người dùng gửi dữ liệu văn bản và nhận lại kết quả phân tích cảm xúc từ mô hình Hugging Face.
+Hệ thống được xây dựng bằng FastAPI, cung cấp các API để phân tích cảm xúc văn bản.
 
-API bao gồm 3 chức năng chính:
+Các endpoint chính:
 
-* GET /
-  Trả về thông tin giới thiệu về hệ thống
-
-* GET /health
-  Kiểm tra trạng thái hoạt động của API
-
-* POST /predict
-  Nhận dữ liệu đầu vào và trả về kết quả phân tích cảm xúc
-
-Ngoài ra, hệ thống có kiểm tra dữ liệu đầu vào và xử lý các trường hợp lỗi cơ bản.
+* GET /: thông tin hệ thống
+* GET /health: kiểm tra trạng thái API
+* GET /model-info: thông tin về mô hình
+* POST /predict: phân tích cảm xúc (đầy đủ)
+* POST /predict/simple: trả về kết quả đơn giản
 
 ---
 
+## Đặc điểm nổi bật
 
-## Cách chạy chương trình
+* Hỗ trợ cả **một câu hoặc nhiều câu**
+* Có **kiểm tra dữ liệu đầu vào**
+* Loại bỏ các câu không có nghĩa (ví dụ: "abc", "123")
+* Trả về kết quả có cấu trúc rõ ràng
+* Có đánh giá **độ tin cậy (confidence)**
+* Có xử lý lỗi và logging
 
-Bước 1: Clone project
+---
 
-git clone https://github.com/TrungKien15/Lab1_APPLICATION-PROGRAMMING-INTERFACE.git
+## Hướng dẫn chạy chương trình
 
-cd Lab1_APPLICATION-PROGRAMMING-INTERFACE
+### Bước 1: Clone project
 
-Bước 2: Tạo môi trường ảo
+```bash
+git clone <link repo>
+cd lab1_api
+```
 
+---
+
+### Bước 2: Tạo môi trường ảo
+
+```bash
 python -m venv venv
+```
 
-Bước 3: Kích hoạt môi trường
+---
 
+### Bước 3: Kích hoạt môi trường
+
+Windows:
+
+```bash
 venv\Scripts\activate
+```
 
-Nếu gặp lỗi quyền (Execution Policy), chạy:
+Nếu gặp lỗi quyền:
 
+```bash
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-
 venv\Scripts\activate
+```
 
-Bước 4: Cài thư viện
+---
 
+### Bước 4: Cài đặt thư viện
+
+```bash
 pip install -r requirements.txt
+```
 
-Bước 5: Chạy API
+---
 
+### Bước 5: Chạy API
+
+```bash
 python -m uvicorn main:app --reload
+```
 
-Bước 6: Test API
+---
 
-Mở trình duyệt và truy cập:
+### Bước 6: Test API
+
+Truy cập:
 
 http://127.0.0.1:8000/docs
 
-Sau đó có thể test API.
+---
 
+## Ví dụ sử dụng
 
-
-## Cách sử dụng API
-
-### Chức năng: POST /predict
-
-### Dữ liệu đầu vào
-
-API hỗ trợ cả 1 câu và nhiều câu:
-
-```json
-{
-  "text": "I love this product"
-}
-```
-
-hoặc
+### Input:
 
 ```json
 {
@@ -101,25 +116,24 @@ hoặc
 }
 ```
 
----
-
-### Kết quả trả về
+### Output:
 
 ```json
 {
   "success": true,
   "count": 2,
-  "processing_time": 0.12,
   "results": [
     {
-      "text": "I love this product", 
+      "text": "I love this product",
       "label": "POSITIVE",
-      "score": 0.99
+      "score": 0.99,
+      "confidence": "HIGH"
     },
     {
       "text": "I hate this service",
       "label": "NEGATIVE",
-      "score": 0.99
+      "score": 0.99,
+      "confidence": "HIGH"
     }
   ]
 }
@@ -127,39 +141,31 @@ hoặc
 
 ---
 
-## Kiểm tra API bằng Python
+## Kiểm tra bằng Python
 
-File `test_api.py` sử dụng thư viện `requests` để gửi request đến API:
+Chạy file:
 
-```python
-import requests
-
-url = "http://127.0.0.1:8000/predict"
-
-data = {
-    "text": ["I love this", "I hate this"]
-}
-
-response = requests.post(url, json=data)
-print(response.json())
+```bash
+python test_api.py
 ```
 
 ---
 
 ## Xử lý lỗi
 
-Hệ thống có kiểm tra một số trường hợp lỗi:
+API xử lý các trường hợp:
 
-* Dữ liệu đầu vào rỗng
-* Sai định dạng (không phải string hoặc list)
-* Lỗi trong quá trình gọi mô hình
+* Input rỗng
+* Sai định dạng
+* Câu không có nghĩa
+* Lỗi khi gọi mô hình
 
 ---
 
 ## Video demo
 
-Link video demo:
-https://drive.google.com/file/d/1FVoOIL5D3MRHEhsU4IVEMeR0Oku-pVbi/view?usp=sharing
+(Link video tại đây)
 
 ---
+
 
