@@ -26,24 +26,23 @@ def is_valid_text(text: str):
 
     # 2. Phải có chữ cái
     if not re.search(r"[a-zA-Z]", text):
-        return False, "Text must contain alphabet characters"
+        return False, "Must contain letters"
 
-    # 3. Không phải toàn ký tự lặp (aaaaa, !!!!!)
-    if len(set(text)) <= 2:
-        return False, "Text looks like repeated characters"
-
-    # 4. Phải có ít nhất 2 từ
+    # 3. Phải có ít nhất 2 từ
     words = text.split()
     if len(words) < 2:
-        return False, "Text too short or not meaningful"
+        return False, "Text must contain at least 2 words"
 
-    # 5. Không phải kiểu random string (asdfgh qwerty)
+    # 4. Kiểm tra nguyên âm (lọc asdfgh)
     vowel_count = sum(1 for c in text.lower() if c in "aeiou")
-    if vowel_count / len(text) < 0.2:
+    if vowel_count / len(text) < 0.25:
         return False, "Text looks like random characters"
 
-    return True, ""
+    # 5. Không phải lặp ký tự
+    if len(set(text)) <= 2:
+        return False, "Repeated characters"
 
+    return True, ""
 
 # ===== API =====
 
