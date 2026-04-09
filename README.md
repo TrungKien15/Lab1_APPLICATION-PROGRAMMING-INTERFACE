@@ -87,8 +87,8 @@ API xử lý các trường hợp lỗi:
 ### Bước 1: Clone project
 
 ```bash
-git clone <link repo>
-cd lab1_api
+git clone https://github.com/TrungKien15/Lab1_APPLICATION-PROGRAMMING-INTERFACE.git
+cd Lab1_APPLICATION-PROGRAMMING-INTERFACE
 ```
 
 ---
