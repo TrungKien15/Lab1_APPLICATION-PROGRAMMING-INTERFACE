@@ -50,7 +50,7 @@ def is_valid_text(text: str):
 @app.get("/")
 def root():
     return {
-        "message": "Sentiment Ấdasdasdasdasdasdasdnalysis API",
+        "message": "Sentiment analysis API",
         "usage": "POST /predict with text input"
     }
 
