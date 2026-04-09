@@ -160,7 +160,7 @@ File này sẽ kiểm tra:
 
 ## Video demo
 
-(Link video tại đây)
+https://drive.google.com/file/d/1mRREMbz-Rs1D1iz0b6ddQWr3HMqTi7eq/view?usp=sharing
 
 
 
